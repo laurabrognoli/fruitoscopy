@@ -11,6 +11,7 @@ def get_dir(dest):
         print(dirs)
         return dirs[0], os.path.join(dest, dirs[0])
 
+
 def read_db(db_name, table_name='Samples'):
     conn = sqlite3.connect(db_name)
     cur = conn.cursor()
@@ -18,6 +19,12 @@ def read_db(db_name, table_name='Samples'):
     my_table = cur.fetchall()
     conn.close()
     return my_table
+
+
+def process_image(image_path):
+    """
+    Takes image path
+    """
 
 
 def write_central_db(rows, folder_name):

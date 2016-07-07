@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic import View
 from django.contrib import messages
+from django.conf import settings
 from rest_framework import viewsets
 from .tasks import process_file
 from .models import ML_Model, SP_Model, Sample, Image
@@ -89,6 +90,7 @@ class ImageListView(View):
         messages.success(request, 'Success! The database has been updated successfully.')
         return render(request, self.template_name, context={'images': images})
 
+
 def handle_uploaded_file(f):
     """
     Handles uploaded file and triggers its processing.
@@ -101,12 +103,9 @@ def handle_uploaded_file(f):
     #         print('Saving to %s' % name)
     #     # tfile = tarfile.open(name, 'r:gz')
     #     process_file.delay(name)
-
-
-    path = '/home/l-brognoli/'
     a = str(int(time.time()))
-    os.makedirs(os.path.join(path, a))
-    full_path = os.path.join(path, a)
+    os.makedirs(os.path.join(settings.IMG_PATH, a))
+    full_path = os.path.join(settings.IMG_PATH, a)
     with open(full_path + '/tmp_file.gz', 'wb') as fd:
         string = BytesIO()
         for chunk in f.chunks():
@@ -118,6 +117,28 @@ def handle_uploaded_file(f):
         #fd.addfile(tarinfo=info, fileobj=string)
     process_file.delay(os.path.join(full_path, 'tmp_file.gz'))
 
+
+def handle_uploaded_image(image):
+    a = str(int(time.time()))
+    b = settings.IMG_TMP_PATH + a + '.jpg'
+    with open(b) as fd:
+        string = BytesIO()
+        for chunk in image.chunks:
+            fd.write(chunk)
+        string.seek(0)
+    # a = image_name (no ext)
+    # b = image_path (con ext)
+    conn = psycopg2.connect(settings.DB_PARAMS_CONNECT)
+    cur = conn.cursor()
+    table_name = 'tables_image'
+    cur.execute("BEGIN;")
+    cur.execute(
+        """INSERT INTO %s (, , , ,) VALUES (%s, %d, %d, '%s', '%s', %d, %d, '%s');"""
+        % (table_name, a, row[2], row[3], row[4], datetime.fromtimestamp(row[5]), row[6] + 1, row[7] + 1, img))
+    cur.execute("COMMIT;")
+
+
+
 def upload_file(request):
     """
     Handles requests for file upload.
@@ -128,7 +149,14 @@ def upload_file(request):
         handle_uploaded_file(request.FILES['file'])
         return HttpResponseRedirect('/success')
     #print('not valid you idiot')
-    return render(request, 'upload.html')
+    return render(request, '/file_upload.html')
+
+
+def upload_image(request):
+    if request.method == 'POST':
+        handle_uploaded_image(request.FILES['file'])
+        return HttpResponseRedirect('/success')
+    return render(request, '/image_upload.html')
 
 
 def about(request):

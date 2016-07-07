@@ -47,3 +47,4 @@ class Image(models.Model):
     path = models.FilePathField(BASE_IMG_DIR)
     label = models.SmallIntegerField(choices=RIPENESS_CHOICES)
     label_is_right = models.NullBooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)

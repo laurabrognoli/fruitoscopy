@@ -22,3 +22,4 @@ def process_file(file_path):
         shutil.move(a[1], settings.MEDIA_ROOT)
         write_central_db(read_db(os.path.join(destination, settings.INPUT_DB)), os.path.join(settings.MEDIA_URL, a[0]))
         os.remove(file_path)
+
