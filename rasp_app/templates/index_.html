@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Spectroscope index</title>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="{{url_for('static', filename='materialize/css/materialize.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+        <link href="{{url_for('static', filename='materialize/css/style.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    </head>
+    <body>
+      <style type="text/css">
+        .button {margin-top: 5%;
+                font-family: Roboto;
+                width: auto;
+                height: auto;}
+        .btn {width: 75%;
+             background-color: #00bcd4;}
+        .button_set {margin-top: 10%;
+                    width: 50%;
+                    height: auto;}
+        .footer {background-color: #607d8b;
+                margin-top: 20%;
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;}
+        .col {color: #ffffff;
+             text-align: center;}
+        a[title] {color: #ffffff}
+      </style>
+        <nav class="light-blue lighten-1" role="navigation">
+            <div class="nav-wrapper container"><a class="brand-logo" href="#">Spectroscope index</a>
+            </div>
+        </nav>
+        <center>
+          <div class="button_set">
+            <div class="button">
+              <a href="take_data/1" class="waves-effect waves-light btn"><b>Take a new sample</b></a>
+            </div>
+            <div class="button">
+              <a href="get_db" class="waves-effect waves-light btn"><b>Get the data from the spectroscope</b></a>
+            </div>
+            <div class="button">
+              <a href="send_db" class="waves-effect waves-light btn"><b>Send data to the main server</b></a>
+            </div>
+            <div class="button">
+              <button id="sync_timestamp" class="waves-effect waves-light btn"><b>Sync timestamp</b></button>
+            </div>
+          </div>
+        </center>
+        <footer class="footer">
+          <div class="container">
+            <div class="row">
+              <div class="col s4">
+                <p><b>Web Valley 2016</b></p>
+              </div>
+              <div class="col s4">
+                <p><b>FBK Foundation</b></p>
+              </div>
+              <div class="col s4">
+                <a href="http://www.fbk.eu/" title="link"><p><b>www.fbk.eu/</b></p></a>
+              </div>
+            </div>
+          </div>
+        </footer>
+        <script type=text/javascript src="{{url_for('static', filename='jquery.js') }}"></script>
+        <script>
+            $("#sync_timestamp").click(function(){
+                var posting = $.post(
+                  '/sync_timestamp',
+                    {timestamp: (Date.now()/1000)}
+                );
+                posting.done(function( data ) {
+                    if(data=="OK"){
+                        alert("Timestamp is now in sync");
+                    }
+                });
+            });
+        </script>
+        <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script src="{{url_for('static', filename='materialize/js/materialize.min.js') }}"></script>
+        <script src="{{url_for('static', filename='materialize/js/materialize.js') }}"></script>
+    </body>
+</html>

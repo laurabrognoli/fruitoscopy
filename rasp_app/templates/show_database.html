@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Database</title>
+
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+  </head>
+
+  <body>
+
+  <style type="text/css">
+    .navbar-title {color: #337ab7;
+                  font-family: Arial;}
+    .col-md-4 {text-align: center;
+              padding: none;}
+    .navbar {margin-bottom: 0;
+            border: 0;}
+    .footer {background-color: #455a64;
+            height: 20%;
+            position: absolute;
+            left: 0;
+            bottom: auto;
+            right: 0;}
+    .body {min-height: 100%;
+          height: auto;
+          height: 100%;}
+    .push {height: 480px;
+          clear: both;}
+    .fix {padding-right: 0;
+         width: auto;
+         margin: 0;}
+    .fix2 {padding-left: 0;
+         padding-right: 0;
+         width: auto;}
+    td {text-align: center;}
+    .details {font-weight: 500; font-size:140%;}
+  </style>
+
+    <div class="body">
+      <nav class="navbar navbar-default">
+        <br>
+        <div class="container-fluid fix row">
+          <div class="navbar-header col-md-1">
+            <a class="navbar-brand" href="/">
+              <img alt="FBK" src="{{url_for('static', filename='logoFBK-2.jpg') }}">
+            </a>
+          </div>
+          <div class="col-md-4 fix2">
+            <centre>
+              <h1 class="navbar-title">Database</h1>
+            </centre>
+          </div>
+        </div>
+        <br>
+      </nav>
+
+      <br>
+    <center>
+      <span>From: <span><input type="date" name="from_date" id="from_date" value="{{date_from}}">
+      <span>   To: <span><input type="date" name="to_date" id="to_date" value="{{date_to}}">
+      <button id="search_date">Search</button>
+    </center>
+
+    {% for row in rows %}
+      <table class="table table-bordered">
+        <br><br>
+        <tr>
+          <td class="active">
+              <p><b>ID:</b> {{row[0]}}</p>
+          </td>
+          <td>
+              <p><b>Fruit:</b> {{row[2]}}</p>
+          </td>
+          <td class="active">
+              <p><b>Label:</b> {{row[3]}}</p>
+          </td>
+          <td>
+              <p><b>Time:</b> {{row[5]}}</p>
+          </td>
+          <td class="active">
+              <p><b>GPS:</b> {{row[4]}}</p>
+          </td>
+          <td>
+              <a href="#"><button data-toggle="modal" data-target="#myModal" onclick="more_info({{row[0]}})"><b>MORE INFO</b> for ID {{row[0]}}</button></a>
+          </td>
+        </tr>
+      </table>
+    {% endfor %}
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+      <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">More data</h4>
+          </div>
+          <div class="modal-body" id="modal_body">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <script src="{{url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script>
+    $("#search_date").click(function(){
+      if($("#from_date").val().len == null || $("#to_date").val().len==null){
+        alert("Cannot search between undefined dates");
+      }
+      else{
+        window.location.href = "/database_info/"+ $("#from_date").val() + "/" + $("#to_date").val();
+      }
+    });
+    function more_info(id_db){
+      var posting = $.post(
+        '/more_info',
+          {id: id_db}
+      );
+      posting.done(function( data ) {
+          var res = data.split(",");
+
+          if(res[0]=="OK"){
+            var html = '<img style="width:100%;height:100%;" src="/static/spectrum.png?'+ new Date().getTime()+'">'
+            html += '<br><span class="details">Fruit: ' + res[1] + '</span>'
+            html += '<br><span class="details">Label: '
+            html += '<select class="form-control" id="fruit">'
+            html += '<option value="0"'
+            if(res[2] == 0){
+              html += 'selected="selected"'
+            }
+            html += '>0 - Bad</option>'
+            html += '<option value="1"'
+            if(res[2] == 1){
+              html += 'selected="selected"'
+            }
+            html += '>1 - Good</option>'
+            html += '</select></span>'
+            html += '<br><span class="details">GPS: ' + res[3] + '</span>'
+            html += '<br><span class="details">Timestamp: ' + res[4] + '</span>'
+            html += '<br><span class="details">ML_model: ' + res[5] + '</span>'
+            html += '<br><span class="details">SP_model: ' + res[6] + '</span>'
+            $('#modal_body').html(html);
+          }
+          else{
+            alert("ERROR");
+          }
+      });
+    }
+    function update_label(id_db){
+      var posting = $.post(
+        '/update_label',
+          {id: id_db, label: $('#label_to_update').val()}
+      );
+      posting.done(function( data ) {
+          if(data=="OK"){
+            alert("Label updated")
+          }
+          else{
+            alert("ERROR");
+          }
+      });
+    }
+    </script>
+  </body>
+
+</html>

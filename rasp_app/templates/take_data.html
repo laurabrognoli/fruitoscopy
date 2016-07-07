@@ -1,0 +1,128 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Take new sample</title>
+
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+  </head>
+
+  <body>
+
+  <style type="text/css">
+    .navbar-title {color: #337ab7;
+                  font-family: Arial;}
+    .col-md-4 {text-align: center;
+              padding: none;}
+    .navbar {margin-bottom: 0;
+            border: 0;}
+    .buttons {background-color: #ffffff;}
+    .footer {background-color: #455a64;
+            height: 20%;
+            position: absolute;
+            left: 0;
+            bottom: auto;
+            right: 0;}
+    .body {min-height: 100%;
+          height: auto;
+          height: 100%;}
+    .push {height: 480px;
+          clear: both;}
+    .fix {padding-right: 0;
+         width: auto;
+         margin: 0;}
+    .fix2 {padding-left: 0;
+         padding-right: 0;
+         width: auto;}
+    .dropdown-menu {width: 400px;
+                   text-align: center;}
+    table {width: 100%;}
+    td {width: 33%;
+       text-align: center;
+       margin-top: auto;}
+    .form-control {margin-inline-start: 20%;
+                  margin-inline-end: 20%;
+                  margin-top: 5%;
+                  margin-bottom: 5%;}
+    .spectrum_div {
+      width: 50vw;
+      margin-left:auto;
+      margin-right:auto;
+    }
+  </style>
+
+    <nav class="navbar navbar-default">
+      <br>
+      <div class="container-fluid fix row">
+        <div class="navbar-header col-md-1">
+          <a class="navbar-brand" href="/">
+            <img alt="FBK" src="{{url_for('static', filename='logoFBK-2.jpg') }}">
+          </a>
+        </div>
+        <div class="col-md-4 fix2">
+          <centre>
+            <h1 class="navbar-title">Take sample</h1>
+          </centre>
+        </div>
+      </div>
+      <br>
+    </nav>
+
+      <table>
+        <tr>
+          <td><b style="font-size:160%;"><label for="field">Select variety:</label></b></td>
+          <td>
+            <select class="form-control" name="fruit" id="fruit" value= {{fruit}}>
+              <option value="1">Raspberry</option>
+              <option value="2">Grape</option>
+            </select>
+            <!--<input type="number" name="field" id="field" class="form-control" placeholder="Field ID" value= {{field}}>-->
+          </td>
+          <td><button type="submit" class="btn btn-default" id="take_sample">Take sample</button></td>
+        </tr>
+      </table>
+
+    <div class="spectrum_div" id="spectrum_im">
+      <h2 style="text-align:center;margin-top:10vw;">Press "Take Sample" to start saving data</h2>
+    </div>
+
+    <!--<form class="navbar-form navbar-left" action="../data_taken" method=post enctype=multipart/form-data>
+      <div class="form-group">
+        <input type="number" name="field" class="form-control" placeholder="Field ID" value= {{field}}>
+      </div>
+      <button type="submit" class="btn btn-default">Take sample</button>
+    </form> -->
+
+    <script src="{{url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script>
+    $("#take_sample").click(function(){
+        var posting = $.post(
+          '/data_taken',
+            {fruit: $("#fruit").val()}
+        );
+        posting.done(function( data ) {
+            if(data=="OK"){
+              $('#spectrum_im').html('<h2>RESULT: not implemented yet</h2><img style="width:100%;height:100%;" src="/static/spectrum.png?'+ new Date().getTime()+'">');
+            }
+            else if(data=="CALIBRATION DONE"){
+              alert("Calibration was wrong. Auto configuration tried to minimize the error. A new wavelenght calibration is needed!!!");
+              window.location.href = "/calib_spectrum"
+            }
+            else{
+              alert("ERROR");
+            }
+        });
+    });
+    </script>
+  </body>
+
+</html>

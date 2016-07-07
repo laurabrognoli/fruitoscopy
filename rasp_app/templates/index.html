@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Rasp App</title>
+
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+
+  </head>
+
+  <body>
+
+    <style type="text/css">
+      .navbar-title {color: #337ab7;
+                    font-family: Arial;}
+      b {color: #ffffff;}
+      .col-md-4 {text-align: center;
+                padding: none;}
+      .navbar {margin-bottom: 0;
+              border: 0;}
+      .buttons {background-color: #ffffff;}
+      .footer {background-color: #455a64;
+              height: 20%;
+              position: absolute;
+              left: 0;
+              bottom: auto;
+              right: 0;}
+      .body {min-height: 100%;
+            height: auto;
+            height: 100%;}
+      .push {height: 480px;
+            clear: both;}
+      .fix {padding-right: 0;
+           width: auto;
+           margin: 0;}
+      .fix2 {padding-left: 0;
+           padding-right: 0;
+           width: auto;}
+      .dropdown-menu {width: 100%;
+                     text-align: center;}
+      body {background-image: url({{url_for('static', filename='sfondo.jpg') }});}
+      body {background-size: cover;
+           background-attachment: fixed;}
+      a { text-decoration: none !important;}
+    </style>
+    <div class="body">
+      <nav class="navbar navbar-default">
+        <br>
+        <div class="container-fluid fix row">
+          <div class="navbar-header col-md-1">
+            <a class="navbar-brand" href="/">
+              <img alt="FBK" src="{{url_for('static', filename='logoFBK-2.jpg') }}">
+            </a>
+          </div>
+          <div class="col-md-4 fix2">
+            <centre>
+              <h1 class="navbar-title">Spectroscope index</h1>
+            </centre>
+          </div>
+        </div>
+        <br>
+      </nav>
+
+      <div class="container-fluid buttons">
+        <br>
+        <div class="row">
+          <div class="col-md-4">
+            <a href="take_data/1"><button type="button" class="btn btn-primary btn-lg btn-block"><b>Take samples</b></button></a>
+          </div>
+          <div class="col-md-4">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><button type="button" class="btn btn-primary btn-lg btn-block"><b>Manage Data  </b><span class="caret"></span></button></a>
+            <ul class="dropdown-menu">
+              <a href="database_info">
+                <br>
+                  <li>View Data</li>
+                <br>
+              </a>
+              <li role="separator" class="divider"></li>
+              <a style="text-align: center" href="{{url_for('static', filename='samples.db') }}">
+                <br>
+                  <li>Download Data</li>
+                <br>
+              </a>
+              <li role="separator" class="divider"></li>
+              <a href="send_db">
+                <br>
+                  <li>Send Data</li>
+                <br>
+              </a>
+            </ul>
+          </div>
+          <div class="col-md-4">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><button type="button" class="btn btn-primary btn-lg btn-block"><b>Options  </b><span class="caret"></span></button></a>
+            <ul class="dropdown-menu">
+              <a href="calib_crop_rotate">
+                <br>
+                  <li>Calibrate image area</li>
+                <br>
+              </a>
+              <li role="separator" class="divider"></li>
+              <a href="calib_spectrum">
+                <br>
+                  <li>Calibrate wavelenght</li>
+                <br>
+              </a>
+              <li role="separator" class="divider"></li>
+              <a id="sync_timestamp" href="#">
+                <br>
+                  <li>Sync timestamp</li>
+                <br>
+              </a>
+              <li role="separator" class="divider"></li>
+
+              <a data-toggle="modal" data-target="#myModal" href="#">
+                <br>
+                  <li>Reset database</li>
+                <br>
+              </a>
+            </ul>
+          </div>
+
+        </div>
+        <br>
+      </div>
+
+      <div class="push">
+      </div>
+    </div>
+
+      <footer class="footer">
+        <div class="container">
+          <br>
+          <div class="row">
+            <div class="col-md-4">
+              <b>Web Valley 2016</b>
+            </div>
+            <div class="col-md-4">
+              <b>FBK Foundation</b>
+            </div>
+            <div class="col-md-4">
+              <a href="http://www.fbk.eu/" title="link"><b>www.fbk.eu/</b></a>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <h4 class="modal-title">Confirmation</h4>
+            </div>
+            <div class="modal-body" id="modal_body">
+              <p>Do you want to delete only the samples recorded or the entire database (also calibration parameters)?</p>
+              <button type="button" class="btn btn-default" style="color:green;" id="reset_samples">Only the sample</button>
+              <button type="button" class="btn btn-default" style="color:red;" id="reset_database">Entire database</button>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    <script src="{{url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script>
+        $("#sync_timestamp").click(function(){
+            var posting = $.post(
+              '/sync_timestamp',
+                {timestamp: (Date.now()/1000)}
+            );
+            posting.done(function( data ) {
+                if(data=="OK"){
+                    alert("Timestamp is now in sync");
+                }
+            });
+        });
+        $("#reset_database").click(function(){
+          if (confirm("This will delete all the data and calibrations. Are you sure to continue anyway?")) {
+            var posting = $.post(
+              '/reset_database',
+                {reset:"entire_database"}
+            );
+            posting.done(function( data ) {
+                if(data=="OK"){
+                    alert("Entire Database has been cleaned");
+                }
+            });
+          }
+        });
+        $("#reset_samples").click(function(){
+          if (confirm("Delete all the samples?")) {
+            var posting = $.post(
+              '/reset_database',
+                {reset:"only_samples"}
+            );
+            posting.done(function( data ) {
+                if(data=="OK"){
+                    alert("Sample Database has been cleaned");
+                }
+            });
+          }
+        });
+    </script>
+  </body>
+</html>

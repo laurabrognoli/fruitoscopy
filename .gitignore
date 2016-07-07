@@ -92,5 +92,9 @@ ENV/
 *.samples.db
 *.samples.db.tar.gz
 *.idea
+
+#Others
+*.jpg
+*.db
 *.sqlite3
 media/

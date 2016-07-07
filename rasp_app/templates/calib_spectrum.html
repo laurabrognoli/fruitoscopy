@@ -1,0 +1,113 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Rasp App</title>
+
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <style>
+    .navbar-title {color: #337ab7;
+                  font-family: Arial;}
+    b {color: #ffffff;}
+    .col-md-4 {text-align: center;
+              padding: none;}
+    .footer {background-color: #455a64;
+            height: 20%;
+            position: absolute;
+            left: 0;
+            bottom: auto;
+            right: 0;}
+      span {font-weight: 600; font-size:160%;}
+    </style>
+    <body onload="get_first_image()">
+  </head>
+    <nav class="navbar navbar-default">
+      <br>
+      <div>
+        <div class="navbar-header col-md-1">
+          <a class="navbar-brand" href="/">
+            <img alt="FBK" src="{{url_for('static', filename='logoFBK-2.jpg') }}">
+          </a>
+        </div>
+        <div >
+          <centre>
+            <h1 class="navbar-title">Spectrum wavelenghts calibration</h1>
+          </centre>
+        </div>
+      </div>
+      <br>
+    </nav>
+    <div style="width:60vw;margin-left:auto;margin-right:auto;">
+      <canvas id="spectrum_canvas" style="width: 99%;margin-left:0.75%;margin-right:0.25%;">
+      Your browser does not support CANVAS :(
+      </canvas>
+      <div id="img_div">
+        <img id="spectrum_img" src="/static/processed.jpg" style="width:100%;display:none;"/>
+      </div>
+      <hr style="border: #c5c1be solid 2px!important;">
+      <div style="text-align:center;"><span>Blue</span></div><br>
+      <input type=range name=blue id="blue" style="width:100%;" min=0 max=1000 value={{param[0]}} onchange="update_canvas()">
+      <hr style="border: #c5c1be solid 2px!important;">
+      <div style="text-align:center;"><span>Red</span></div><br>
+      <input type=range name=red id="red" style="width:100%;" min=0 max=1000 value={{param[1]}} onchange="update_canvas()">
+      <hr style="border: #c5c1be solid 2px!important;">
+      <button type="submit" id="upload_changes" class="btn btn-primary btn-lg btn-block">Upload changes</button>
+    </div>
+    <br><br><br>
+    <footer class="footer">
+      <div class="container">
+        <br>
+        <div class="row">
+          <div class="col-md-4">
+            <b>Web Valley 2016</b>
+          </div>
+          <div class="col-md-4">
+            <b>FBK Foundation</b>
+          </div>
+          <div class="col-md-4">
+            <a href="http://www.fbk.eu/" title="link"><b>www.fbk.eu/</b></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <script src="{{url_for('static', filename='jquery.min.js') }}"></script>
+    <script src="{{url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+    <script>
+    $("#upload_changes").click(function(){
+        var posting = $.post(
+          '/calib_spectrum_done',
+            {blue: $('#blue').val(), red: $('#red').val()}
+        );
+        posting.done(function( data ) {
+            if(data=="OK"){
+              alert("Calibration done");
+            }
+            else{
+              alert("Something went wrong");
+            }
+        });
+    });
+    function get_first_image(){
+      $('#img_div').html("<img id=\"spectrum_img\" src=\"/static/processed.jpg?"+ new Date().getTime() +"\" style=\"width:100%;display:none;\" onload=\"update_canvas()\"/>");
+      //$('#spectrum_img').onload = update_canvas();
+    }
+    function update_canvas(){
+      var c = document.getElementById("spectrum_canvas");
+      $('#spectrum_canvas').css('height', $('#spectrum_canvas').width()/4 + 'px');
+      var ctx = c.getContext("2d");
+      var img = document.getElementById("spectrum_img");
+      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.drawImage(img,0,0,{{dim[2]}}-{{dim[0]}},{{dim[3]}}-{{dim[1]}},0,0,c.width,c.height);
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(($('#blue').val()*300)/1005,0,1,c.height);
+      //ctx.fillStyle = "#FF0000";
+      ctx.fillRect(($('#red').val()*300)/1005,0,1,c.height);
+    }
+    </script>
+  </body>
+</html>

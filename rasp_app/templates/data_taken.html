@@ -1,0 +1,29 @@
+<!doctype html>
+
+<html>
+<head>
+  <title>Result</title>
+</head>
+
+<body>
+<style type="text/css">
+  .main {background-color: #c2185b;}
+  .results {margin-left: 20%;}
+  .button {text-align: right; margin-right: 20%;}
+  h1 {text-align: center; font-family: Arial; color: #ffffff;}
+</style>
+  <div class="main">
+    <h1>Result</h1>
+  </div>
+  <div>
+    <div class="results">
+      <p>{{ result }}</p>
+    </div>
+    <div class="button">
+      <a href="take_data/{{ field }}"><button><b>Take another sample</b></button></a>
+    </div>
+  </div>
+    <img src="{{url_for('static', filename='spectrum.png')}}" style="width:50%; margin-left: 25%;"/>
+</body>
+
+</html>

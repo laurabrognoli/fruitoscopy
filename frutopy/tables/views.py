@@ -103,18 +103,15 @@ def handle_uploaded_file(f):
     #         print('Saving to %s' % name)
     #     # tfile = tarfile.open(name, 'r:gz')
     #     process_file.delay(name)
+
+
+
     a = str(int(time.time()))
     os.makedirs(os.path.join(settings.IMG_PATH, a))
     full_path = os.path.join(settings.IMG_PATH, a)
     with open(full_path + '/tmp_file.gz', 'wb') as fd:
-        string = BytesIO()
         for chunk in f.chunks():
             fd.write(chunk)
-        string.seek(0)
-        #info.size = len(string)
-        #info = tarfile.TarInfo(name='berry')
-        #info.type = tarfile.DIRTYPE
-        #fd.addfile(tarinfo=info, fileobj=string)
     process_file.delay(os.path.join(full_path, 'tmp_file.gz'))
 
 

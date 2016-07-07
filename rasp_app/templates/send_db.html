@@ -1,0 +1,81 @@
+<!doctype html>
+
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Send db to main server</title>
+
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+  </head>
+
+  <body>
+    <style type="text/css">
+      .navbar-title {color: #337ab7;
+                    font-family: Arial;}
+      b {color: #ffffff;}
+      .col-md-4 {text-align: center;
+                padding: none;}
+      .navbar {margin-bottom: 0;
+              border: 0;}
+      .fix {padding-right: 0;
+           width: auto;
+           margin: 0;}
+      .fix2 {padding-left: 0;
+           padding-right: 0;
+           width: auto;}
+      .center {margin-top: 10%;}
+      .btn {width: 50%;
+           margin-top: 5%;}
+      .input {margin-top: 5%;}
+      .body {margin: 0;}
+    </style>
+    <nav class="navbar navbar-default">
+      <br>
+      <div class="container-fluid fix row">
+        <div class="navbar-header col-md-1">
+          <a class="navbar-brand" href="/">
+            <img alt="FBK" src="{{url_for('static', filename='logoFBK-2.jpg') }}">
+          </a>
+        </div>
+        <div class="col-md-4 fix2">
+          <centre>
+            <h1 class="navbar-title">Send Database</h1>
+          </centre>
+        </div>
+      </div>
+      <br>
+    </nav>
+    <div class="body row">
+      <div class="left col-md-3">
+
+      </div>
+      <div class="center col-md-6">
+        <center>
+          <form action="/db_uploaded" method=post enctype=multipart/form-data>
+              <input class="input" type=text name=user placeholder="Username" style="width: 50%;">
+              <br>
+              <input class="input" type=password name=pass placeholder="Password" style="width: 50%;">
+              <br>
+              <input class="input" type=file name=file>
+              <input type=submit type="button" class="btn btn-primary btn-lg btn-block" value=Upload>
+              <br>
+              <br>
+              <div class="alert alert-danger" role="alert">Username and password not implemented yet</div>
+          </form>
+
+        </center>
+      </div>
+      <div class="right col-md-3">
+
+      </div>
+    </div>
+  </body>
+
+</html>

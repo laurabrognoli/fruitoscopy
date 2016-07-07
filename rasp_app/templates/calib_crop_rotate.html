@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Rasp App</title>
+
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.min.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="{{url_for('static', filename='bootstrap/css/bootstrap-theme.css') }}" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <style type="text/css">
+      .navbar-title {
+        color: #337ab7;
+        font-family: Arial;
+      }
+      .footer {background-color: #455a64;
+              height: 20%;
+              position: absolute;
+              left: 0;
+              bottom: auto;
+              right: 0;}
+      .col-md-4 {text-align: center;
+                padding: none;}
+      b {color: #ffffff;}
+      span {font-weight: 600; font-size:160%;}
+    </style>
+  </head>
+
+  <body onload="get_new_image()">
+      <nav class="navbar navbar-default">
+        <br>
+        <div>
+          <div class="navbar-header col-md-1">
+            <a class="navbar-brand" href="/">
+              <img alt="FBK" src="{{url_for('static', filename='logoFBK-2.jpg') }}">
+            </a>
+          </div>
+          <div class="col-md-4 fix2">
+            <centre>
+              <h1 class="navbar-title">Spectrum area calibration</h1>
+            </centre>
+          </div>
+        </div>
+        <br>
+      </nav>
+      <center>
+        <div id="spectrum_div">
+        </div>
+      </center>
+      <div style="width:70vw;margin-left:auto;margin-right:auto;">
+        <hr style="border: #c5c1be solid 2px!important;">
+        <div style="text-align:center;"><span>Left side</span>
+        <div style="float:right;"><span>--</span></div>
+        <div style="float:left;"><span>+</span></div></div>
+        <input type=range min=0 max=1640 name=param_0 id=left value= {{param[0]}} onchange="update_image()">
+        <hr style="border: #c5c1be solid 2px!important;">
+        <div style="text-align:center;"><span>Top side</span>
+        <div style="float:right;"><span>--</span></div>
+        <div style="float:left;"><span>+</span></div></div>
+        <input type=range min=0 max=1300 name=param_1 id=top value= {{param[1]}} onchange="update_image()">
+        <hr style="border: #c5c1be solid 2px!important;">
+        <div style="text-align:center;"><span>Right side</span>
+        <div style="float:right;"><span>+</span></div>
+        <div style="float:left;"><span>--</span></div></div>
+        <input type=range min=1640 max=3280 name=param_2 id=right value= {{param[2]}} onchange="update_image()">
+        <hr style="border: #c5c1be solid 2px!important;">
+        <div style="text-align:center;"><span>Bottom side</span>
+        <div style="float:right;"><span>+</span></div>
+        <div style="float:left;"><span>--</span></div></div>
+        <input type=range min=1200 max=2464 name=param_3 id=bott value= {{param[3]}} onchange="update_image()">
+        <hr style="border: #c5c1be solid 2px!important;">
+        <div style="text-align:center;"><span>Rotation</span>
+        <div style="float:right;"><span>CCW ↺</span></div>
+        <div style="float:left;"><span>CW ↻</span></div></div>
+        <input type=range min="-15" max="15" name=param_4 id=rot value= {{param[4]}} onchange="update_image()">
+        <hr style="border: #c5c1be solid 2px!important;">
+      </div>
+      <br>
+      <!--<button type="submit" id="submit" name="submit">Upload changes</button>-->
+      <a href="/"><button class="btn btn-primary btn-lg btn-block" style="width:40vw;margin-left:auto;margin-right:auto;">Go back to index</button></a>
+      <br>
+      <br>
+      <footer class="footer">
+        <div class="container">
+          <br>
+          <div class="row">
+            <div class="col-md-4">
+              <b>Web Valley 2016</b>
+            </div>
+            <div class="col-md-4">
+              <b>FBK Foundation</b>
+            </div>
+            <div class="col-md-4">
+              <a href="http://www.fbk.eu/" title="link"><b>www.fbk.eu/</b></a>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <script src="{{url_for('static', filename='jquery.min.js') }}"></script>
+      <script src="{{url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+      <script>
+      function update_image(){
+          var posting = $.post(
+            '/calib_crop_rotate_done',
+              {param_0: $("#left").val(), param_1: $("#top").val(), param_2: $("#right").val(), param_3: $("#bott").val(), param_4: $("#rot").val()}
+          );
+          posting.done(function( data ) {
+              if(data=="OK"){
+                //location.reload();
+                get_new_image()
+                //$('#spectrum_img').attr("src", "/static/processed.jpg?" );
+              }
+              else{
+                alert("ERROR")
+              }
+          });
+      }
+
+      //$("#submit").click(
+      //});
+
+      function get_new_image(){
+        $('#spectrum_div').html("<img src='/static/processed.jpg?"+ new Date().getTime()+"' style='width:60%;'/>")
+      }
+
+      </script>
+    </body>
+</html>
