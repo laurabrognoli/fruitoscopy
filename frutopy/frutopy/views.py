@@ -4,20 +4,12 @@ from django.views.generic import View
 from django.contrib import messages
 from django.conf import settings
 from rest_framework import viewsets
-from .tasks import process_file
+from .utils import handle_uploaded_file
 from .models import ML_Model, SP_Model, Sample, Image
 from .choices import RIPENESS_LABELS
 from frutopy import serializers
 import time
-import os
 from io import BytesIO
-
-class SampleViewSet(viewsets.ModelViewSet):
-    """
-    Allows samples to be viewed or edited.
-    """
-    queryset = Sample.objects.all().order_by('-id') # Descending order
-    serializer_class = serializers.SampleSerializer
 
 
 class ML_ModelViewSet(viewsets.ModelViewSet):
@@ -50,7 +42,6 @@ class SampleListView(View):
     def post(self, request):
         samples = Sample.objects.all()
         validated = request.POST.getlist('validation')
-        print(validated)
         for s in samples:
             if s.label != RIPENESS_LABELS[str(request.POST[str(s.pk)]).lower()]:
                 s.label = RIPENESS_LABELS[str(request.POST[str(s.pk)]).lower()]
@@ -91,18 +82,14 @@ class ImageListView(View):
         return render(request, self.template_name, context={'images': images})
 
 
-def handle_uploaded_file(f):
+def upload_file(request):
     """
-    Handles uploaded file and triggers its processing.
+    Handles requests for file upload.
     """
-
-    a = str(int(time.time()))
-    os.makedirs(os.path.join(settings.IMG_TMP_PATH, a))
-    full_path = os.path.join(settings.IMG_TMP_PATH, a)
-    with open(full_path + '/tmp_file.gz', 'wb') as fd:
-        for chunk in f.chunks():
-            fd.write(chunk)
-    process_file.delay(os.path.join(full_path, 'tmp_file.gz'))
+    if request.method == 'POST':
+        handle_uploaded_file(request.FILES['file'])
+        return HttpResponseRedirect('/success')
+    return render(request, 'file_upload.html')
 
 
 def handle_uploaded_image(image):
@@ -123,16 +110,6 @@ def handle_uploaded_image(image):
         """INSERT INTO %s (path, label) VALUES (%s, %d);"""
         % (table_name, b, 0))
     cur.execute("COMMIT;")
-
-
-def upload_file(request):
-    """
-    Handles requests for file upload.
-    """
-    if request.method == 'POST':
-        handle_uploaded_file(request.FILES['file'])
-        return HttpResponseRedirect('/success')
-    return render(request, 'file_upload.html')
 
 
 def upload_image(request):

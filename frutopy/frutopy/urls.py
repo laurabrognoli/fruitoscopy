@@ -2,7 +2,6 @@ from django.conf.urls import url, include
 from rest_framework import routers
 from django.conf.urls.static import static
 from django.conf import settings
-# from .views import SampleViewSet, ML_ModelViewSet, SP_ModelViewSet, SampleListView, ImageListView
 from frutopy import views
 
 '''
