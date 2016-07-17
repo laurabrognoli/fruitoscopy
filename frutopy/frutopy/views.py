@@ -7,7 +7,6 @@ from rest_framework import viewsets
 from .tasks import process_file
 from .models import ML_Model, SP_Model, Sample, Image
 from .choices import RIPENESS_LABELS
-# from frutopy.frutopy import serializers
 from frutopy import serializers
 import time
 import os
@@ -98,8 +97,8 @@ def handle_uploaded_file(f):
     """
 
     a = str(int(time.time()))
-    os.makedirs(os.path.join(settings.IMG_PATH, a))
-    full_path = os.path.join(settings.IMG_PATH, a)
+    os.makedirs(os.path.join(settings.IMG_TMP_PATH, a))
+    full_path = os.path.join(settings.IMG_TMP_PATH, a)
     with open(full_path + '/tmp_file.gz', 'wb') as fd:
         for chunk in f.chunks():
             fd.write(chunk)
@@ -118,13 +117,12 @@ def handle_uploaded_image(image):
     # b = image_path (con ext)
     conn = psycopg2.connect(settings.DB_PARAMS_CONNECT)
     cur = conn.cursor()
-    table_name = 'tables_image'
+    table_name = 'frutopy_image'
     cur.execute("BEGIN;")
     cur.execute(
-        """INSERT INTO %s (, , , ,) VALUES (%s, %s, %d, '%s');"""
-        % (table_name, a, row[2], row[3], row[4], datetime.fromtimestamp(row[5]), row[6] + 1, row[7] + 1, img))
+        """INSERT INTO %s (path, label) VALUES (%s, %d);"""
+        % (table_name, b, 0))
     cur.execute("COMMIT;")
-
 
 
 def upload_file(request):
