@@ -6,8 +6,9 @@ from django.conf import settings
 from rest_framework import viewsets
 from .tasks import process_file
 from .models import ML_Model, SP_Model, Sample, Image
-from tables.choices import RIPENESS_LABELS
-from . import serializers
+from .choices import RIPENESS_LABELS
+# from frutopy.frutopy import serializers
+from frutopy import serializers
 import time
 import os
 from io import BytesIO
@@ -96,16 +97,6 @@ def handle_uploaded_file(f):
     Handles uploaded file and triggers its processing.
     """
 
-    # with tempfile.mkstemp() as destination:
-    #     name = destination.name
-    #     for chunk in f.chunks():
-    #         destination.write(chunk)
-    #         print('Saving to %s' % name)
-    #     # tfile = tarfile.open(name, 'r:gz')
-    #     process_file.delay(name)
-
-
-
     a = str(int(time.time()))
     os.makedirs(os.path.join(settings.IMG_PATH, a))
     full_path = os.path.join(settings.IMG_PATH, a)
@@ -130,7 +121,7 @@ def handle_uploaded_image(image):
     table_name = 'tables_image'
     cur.execute("BEGIN;")
     cur.execute(
-        """INSERT INTO %s (, , , ,) VALUES (%s, %d, %d, '%s', '%s', %d, %d, '%s');"""
+        """INSERT INTO %s (, , , ,) VALUES (%s, %s, %d, '%s');"""
         % (table_name, a, row[2], row[3], row[4], datetime.fromtimestamp(row[5]), row[6] + 1, row[7] + 1, img))
     cur.execute("COMMIT;")
 
@@ -141,19 +132,16 @@ def upload_file(request):
     Handles requests for file upload.
     """
     if request.method == 'POST':
-        #form = UploadFileForm(request.POST, request.FILES)
-        #if form.is_valid():
         handle_uploaded_file(request.FILES['file'])
         return HttpResponseRedirect('/success')
-    #print('not valid you idiot')
-    return render(request, '/file_upload.html')
+    return render(request, 'file_upload.html')
 
 
 def upload_image(request):
     if request.method == 'POST':
         handle_uploaded_image(request.FILES['file'])
         return HttpResponseRedirect('/success')
-    return render(request, '/image_upload.html')
+    return render(request, 'image_upload.html')
 
 
 def about(request):

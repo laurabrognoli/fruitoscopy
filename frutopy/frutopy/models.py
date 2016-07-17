@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from tables.choices import RIPENESS_CHOICES
-from frutopy.local_settings import BASE_IMG_DIR
+from .choices import RIPENESS_CHOICES
+from .local_settings import BASE_IMG_DIR
 
 
 # Machine Learning models
@@ -36,7 +36,7 @@ class Sample(models.Model):
     sp_model = models.ForeignKey(SP_Model, on_delete=models.PROTECT)
 
     def __string__(self):
-        return self.spectrum
+        return self.pk
 
     class Meta:
         ordering = ['-tmstp']
@@ -47,4 +47,4 @@ class Image(models.Model):
     path = models.FilePathField(BASE_IMG_DIR)
     label = models.SmallIntegerField(choices=RIPENESS_CHOICES)
     label_is_right = models.NullBooleanField(default=False)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    tmstp = models.DateTimeField(auto_now_add=True, blank=True, editable=False)

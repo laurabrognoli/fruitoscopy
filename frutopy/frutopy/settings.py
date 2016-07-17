@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = 'oztx+%k61#m99ur!h#42+uu$y41mlzux@uj%tfsod0z$72v7_)'
@@ -36,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'tables',
+    'frutopy',
 ]
 
 STATICFILES_FINDERS = ("django.contrib.staticfiles.finders.FileSystemFinder",
@@ -103,4 +104,3 @@ try:
     from .local_settings import *
 except ImportError as e:
     pass
-

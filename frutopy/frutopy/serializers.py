@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from tables import models
+from frutopy import models
 
 
 class SampleSerializer(serializers.HyperlinkedModelSerializer):
