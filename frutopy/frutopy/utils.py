@@ -3,34 +3,35 @@ import psycopg2
 from django.conf import settings
 from datetime import datetime
 import frutopy.tasks
-import time
+import random
+
 import os
-import shutil
 
 
 def handle_uploaded_file(f):
     """
     Handles uploaded file and triggers its processing (celery task).
     """
-    file_name = str(int(time.time()))
-    # ^ okay so what if two people upload two files at the same time? idk
-    full_path = os.path.join(settings.IMG_TMP_PATH, file_name)
-    os.makedirs(full_path)
-    with open(full_path + '/tmp_file.gz', 'wb') as fd:
-        for chunk in f.chunks():
-            fd.write(chunk)
-    file_full_path = os.path.join(full_path, 'tmp_file.gz')
-    print(full_path)
-    frutopy.tasks.process_file.delay(file_full_path, full_path)
-    #TODO: return something to deal with errors (set ignore on task to false!)
+    file_name = str(random.getrandbits(64))
+    dir_path = os.path.join(settings.IMG_TMP_PATH, file_name)
+    try:
+        os.makedirs(dir_path)
+        archive_name = '/tmp_file.gz'
+        file_full_path = dir_path + archive_name
+        with open(file_full_path, 'wb') as fd:
+            for chunk in f.chunks():
+                fd.write(chunk)
+    except Exception:
+        return False
+    frutopy.tasks.process_file.delay(file_full_path, dir_path)
+    return True
 
 
 def get_dir(dest):
-    print(dest)
     for root, dirs, files in os.walk(dest):
-        print(dirs)
-        return dirs[0], os.path.join(dest, dirs[0])
-
+        if len(dirs) == 1:
+            return dirs[0], os.path.join(dest, dirs[0])
+        raise TypeError('Such error, many folders')
 
 def read_db(db_name, table_name='Samples'):
     conn = sqlite3.connect(db_name)

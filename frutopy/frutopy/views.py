@@ -87,8 +87,9 @@ def upload_file(request):
     Handles requests for file upload.
     """
     if request.method == 'POST':
-        handle_uploaded_file(request.FILES['file'])
-        return HttpResponseRedirect('/success')
+        if (handle_uploaded_file(request.FILES['file'])):
+            return HttpResponseRedirect('/success')
+        return HttpResponseRedirect('/')
     return render(request, 'file_upload.html')
 
 
