@@ -1,14 +1,16 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.views.generic import View
 from django.contrib import messages
 from django.conf import settings
+from django.core import serializers
 from rest_framework import viewsets
 from .utils import handle_uploaded_file
-from .models import ML_Model, SP_Model, Sample, Image
+from .models import ML_Model, SP_Model, Sample, ReducedSample, Image
 from .choices import RIPENESS_LABELS
-from frutopy import serializers
+from frutopy import serializers as frutopy_serializers
 import time
+import json
 from io import BytesIO
 
 
@@ -17,7 +19,7 @@ class ML_ModelViewSet(viewsets.ModelViewSet):
     Allows machine learning models to be viewed or edited.
     """
     queryset = ML_Model.objects.all().order_by('-id')
-    serializer_class = serializers.ML_ModelSerializer
+    serializer_class = frutopy_serializers.ML_ModelSerializer
 
 
 class SP_ModelViewSet(viewsets.ModelViewSet):
@@ -25,34 +27,30 @@ class SP_ModelViewSet(viewsets.ModelViewSet):
     Allows signal processing models to be viewed, edited, or deleted.
     """
     queryset = SP_Model.objects.all().order_by('-id')
-    serializer_class = serializers.SP_ModelSerializer
+    serializer_class = frutopy_serializers.SP_ModelSerializer
 
 
 class SampleListView(View):
     """
     Allows user to check and modify labels and validate the sample for further training.
     """
-    template_name = 'samples_list.html'
 
     def get(self, request):
-        samples = Sample.objects.all()
-
-        return render(request, self.template_name, context={'samples': samples})
+        samples = ReducedSample.objects.all()
+        return HttpResponse(serializers.serialize('json', samples),
+                            content_type='application/json')
 
     def post(self, request):
-        samples = Sample.objects.all()
-        validated = request.POST.getlist('validation')
-        for s in samples:
-            if s.label != RIPENESS_LABELS[str(request.POST[str(s.pk)]).lower()]:
-                s.label = RIPENESS_LABELS[str(request.POST[str(s.pk)]).lower()]
-                s.label_is_right = True
-            elif str(s.pk) in validated:
-                s.label_is_right = True
-            elif str(s.pk) not in validated and s.label_is_right == True:
-                s.label_is_right = False
-            s.save()
-        messages.success(request, 'Success! The database has been updated successfully.')
-        return render(request, self.template_name, context={'samples': samples})
+        modified_sample = json.loads(request.read().decode("utf-8"))
+        sample = Sample.objects.get(pk=modified_sample['pk'])
+        if 'validated' in modified_sample:
+            sample.label_is_right = modified_sample['validated']
+        if 'label' in modified_sample:
+            sample.label = modified_sample['label']
+        print(sample.label)
+        sample.save()
+        response = {'success': True}
+        return HttpResponse(json.dumps(response), content_type='application/json')
 
 
 class ImageListView(View):
@@ -86,11 +84,12 @@ def upload_file(request):
     """
     Handles requests for file upload.
     """
+
+    response = {'success': False}
     if request.method == 'POST':
-        if (handle_uploaded_file(request.FILES['file'])):
-            return HttpResponseRedirect('/success')
-        return HttpResponseRedirect('/')
-    return render(request, 'file_upload.html')
+        if handle_uploaded_file(request.FILES['file']):
+            response['success'] = True
+        return HttpResponse(json.dumps(response), content_type='application/json')
 
 
 def handle_uploaded_image(image):

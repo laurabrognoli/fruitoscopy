@@ -24,7 +24,6 @@ class SP_Model(models.Model):
 
 # Samples
 class Sample(models.Model):
-
     spectrum = ArrayField(models.FloatField())
     fruit = models.IntegerField()
     label = models.SmallIntegerField(choices=RIPENESS_CHOICES)
@@ -40,6 +39,24 @@ class Sample(models.Model):
 
     class Meta:
         ordering = ['-tmstp']
+
+class ReducedSample(models.Model):
+    #spectrum = ArrayField(models.FloatField())
+    fruit = models.IntegerField()
+    label = models.SmallIntegerField(choices=RIPENESS_CHOICES)
+    #gps = models.TextField(null=True)
+    tmstp = models.DateTimeField(null=True) # Timestamp
+    image_path = models.FilePathField(BASE_IMG_DIR, null=True) # I'm not expecting the pickers to take a pic of every sample they scan, hence default=None
+    label_is_right = models.NullBooleanField(default=False)
+    ml_model = models.ForeignKey(ML_Model, on_delete=models.PROTECT)
+    sp_model = models.ForeignKey(SP_Model, on_delete=models.PROTECT)
+
+    def __string__(self):
+        return self.pk
+
+    class Meta:
+        ordering = ['-tmstp']
+        db_table = 'frutopy_sample'
 
 
 # Images
