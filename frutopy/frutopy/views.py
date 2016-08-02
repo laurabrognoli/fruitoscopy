@@ -84,7 +84,6 @@ def upload_file(request):
     """
     Handles requests for file upload.
     """
-
     response = {'success': False}
     if request.method == 'POST':
         if handle_uploaded_file(request.FILES['file']):
@@ -100,8 +99,6 @@ def handle_uploaded_image(image):
         for chunk in image.chunks:
             fd.write(chunk)
         string.seek(0)
-    # a = image_name (no ext)
-    # b = image_path (con ext)
     conn = psycopg2.connect(settings.DB_PARAMS_CONNECT)
     cur = conn.cursor()
     table_name = 'frutopy_image'

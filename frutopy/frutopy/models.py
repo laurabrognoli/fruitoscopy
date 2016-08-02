@@ -40,6 +40,7 @@ class Sample(models.Model):
     class Meta:
         ordering = ['-tmstp']
 
+
 class ReducedSample(models.Model):
     #spectrum = ArrayField(models.FloatField())
     fruit = models.IntegerField()
