@@ -16,6 +16,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = 'oztx+%k61#m99ur!h#42+uu$y41mlzux@uj%tfsod0z$72v7_)'
 
+STATIC_ROOT = os.path.join(BASE_DIR, '/static')
+
+STATIC_URL = '/static/'
+
+APP_PATH = STATIC_URL + 'app/index.html'
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',

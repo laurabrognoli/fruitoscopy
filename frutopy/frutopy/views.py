@@ -1,10 +1,12 @@
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import View
 from django.contrib import messages
 from django.conf import settings
 from django.core import serializers
+from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import viewsets
+from .settings import APP_PATH
 from .utils import handle_uploaded_file
 from .models import ML_Model, SP_Model, Sample, ReducedSample, Image
 from .choices import RIPENESS_LABELS
@@ -126,8 +128,9 @@ def success(request):
     """
     return render(request, 'success.html')
 
+@ensure_csrf_cookie
 def home(request):
     """
     Home page.
     """
-    return render(request, 'index.html')
+    return redirect(APP_PATH)
